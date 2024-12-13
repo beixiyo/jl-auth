@@ -1,0 +1,36 @@
+{
+  "name": "@jl-org/auth",
+  "version": "0.0.1",
+  "description": "Web 集成各大平台一键登录",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "vite": "^6.0.1",
+    "vite-plugin-dts": "^4.3.0"
+  },
+  "keywords": [
+    "auth",
+    "jl-auth"
+  ],
+  "author": "CJL <2662442385@qq.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/beixiyo/jl-auth"
+}
