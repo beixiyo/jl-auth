@@ -1,6 +1,9 @@
-import type { GoogleConfig, GoogleUserInfo } from './type'
+import type { AuthData, GoogleConfig, GoogleUserInfo } from './type'
 
 
+/**
+ * 获取谷歌登录用户信息
+ */
 export async function getGoogleUserInfo(
   googleConfig: GoogleConfig
 ): Promise<GoogleUserInfo | undefined> {
@@ -23,7 +26,9 @@ export async function getGoogleUserInfo(
   requestBody.append('redirect_uri', redirectUri)
   requestBody.append('grant_type', 'authorization_code')
 
-  const data = await fetch(
+  let authData: AuthData
+
+  return fetch(
     tokenEndpoint,
     {
       method: 'POST',
@@ -34,18 +39,25 @@ export async function getGoogleUserInfo(
     }
   )
     .then(response => response.json())
-    .then(data => {
+    .then(async (data: AuthData) => {
+      authData = data
       /** 获得token令牌的信息 */
       const accessToken = data.access_token
+
       /** 调用获取用户信息接口 */
-      fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      return fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
       })
         .then(response => response.json())
-        .then(userInfo => userInfo)
-    })
+        .then(userInfo => {
+          const res: GoogleUserInfo = {
+            ...userInfo,
+            authData
+          }
 
-  return data as GoogleUserInfo | undefined
+          return res
+        })
+    })
 }

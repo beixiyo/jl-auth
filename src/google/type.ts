@@ -1,3 +1,10 @@
+export type AuthData = {
+  access_token: string
+  expires_in: number
+  scope: string
+  token_type: string
+  id_token: string
+}
 
 export type GoogleUserInfo = {
   id: string
@@ -7,6 +14,7 @@ export type GoogleUserInfo = {
   given_name: string
   family_name: string
   picture: string
+  authData: AuthData
 }
 
 export type GoogleConfig = {

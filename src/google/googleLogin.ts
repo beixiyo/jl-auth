@@ -1,6 +1,9 @@
 import type { GoogleLoginConfig } from './type'
 
 
+/**
+ * 跳转到谷歌登录
+ */
 export function googleLogin(googleLoginConfig: GoogleLoginConfig) {
   const {
     clientId,
