@@ -1,10 +1,5 @@
-export type AuthData = {
-  access_token: string
-  expires_in: number
-  scope: string
-  token_type: string
-  id_token: string
-}
+import type { AuthData, OAuthClientLoginConfig } from '@/types'
+
 
 export type GoogleUserInfo = {
   id: string
@@ -17,30 +12,11 @@ export type GoogleUserInfo = {
   authData: AuthData
 }
 
-export type GoogleConfig = {
-  clientId: string
-  clientSecret: string
-  redirectUri: string
-}
-
-export type GoogleLoginConfig = {
-  /** 你的Google OAuth 客户端 ID */
-  clientId: string
-  /** 重定向 URI */
-  redirectUri: string
-  /** 
-   * 请求的权限范围，可以根据需求修改
-   * @default 'email profile'
-   */
-  scope?: string
-  /** 
-   * 用于防止跨站请求伪造（CSRF）攻击
-   * @default ''
-   */
-  state?: string
-  /** 
-   * 授权响应类型，表示要求返回授权码
-   * @default 'code'
-   */
-  responseType?: string
-}
+export type GoogleLoginConfig =
+  OAuthClientLoginConfig &
+  {
+    /**
+     * 'login' 让用户每次都需要重新输入账号和密码
+     */
+    prompt?: 'login' & {}
+  }

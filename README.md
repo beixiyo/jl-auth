@@ -5,6 +5,8 @@
 npm i @jl-org/auth
 ```
 
+**node 版本 >= 18**
+
 ---
 
 
@@ -12,8 +14,11 @@ npm i @jl-org/auth
 
 [点击到谷歌官网创建凭据](https://console.cloud.google.com/apis)
 
+
+### 纯浏览器实现
+
 ```ts
-import { googleLogin, getGoogleUserInfo } from '@jl-org/auth'
+import { googleLogin, clientGetGoogleUserInfo, serverGetGoogleUserInfo } from '@jl-org/auth'
 
 
 /**
@@ -21,19 +26,38 @@ import { googleLogin, getGoogleUserInfo } from '@jl-org/auth'
  */
 document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
   googleLogin({
-    clientId: 'your-client-id',
-    redirectUri: 'your-redirect-uri',
+    client_id: 'your-client-id',
+    redirect_uri: 'your-redirect-uri',
   })
 })
 
 
 /**
- * 在你的 redirectUri 页面中获取用户信息
+ * ## 注意，此方式会暴露你的 client_secret
+ * 在你的 redirectUri 前端页面中获取用户信息
  */
-getGoogleUserInfo({
-  clientId: 'your-client-id',
-  clientSecret: 'your-client-secret',
-  redirectUri: 'your-redirect-uri'
+clientGetGoogleUserInfo({
+  client_id: 'your-client-id',
+  client_secret: 'your-client-secret',
+  redirect_uri: 'your-redirect-uri'
+})
+  .then(userInfo => {
+    console.log(userInfo)
+  })
+```
+
+### 服务器端实现
+
+```ts
+import { serverGetGoogleUserInfo } from '@jl-org/auth'
+
+
+// 省略服务器处理请求...
+serverGetGoogleUserInfo({
+  client_id: 'your-client-id',
+  client_secret: 'your-client-secret',
+  redirect_uri: 'your-redirect-uri',
+  code: 'your-code'
 })
   .then(userInfo => {
     console.log(userInfo)

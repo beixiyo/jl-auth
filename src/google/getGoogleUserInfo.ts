@@ -1,30 +1,40 @@
-import type { AuthData, GoogleConfig, GoogleUserInfo } from './type'
+import { GRANT_TYPE, RESPONSE_TYPE } from '@/constants'
+import type { GoogleUserInfo } from './type'
+import type { AuthData, OAuthServerConfig } from '@/types'
 
 
 /**
- * 获取谷歌登录用户信息
+ * 浏览器获取谷歌用户信息
  */
-export async function getGoogleUserInfo(
-  googleConfig: GoogleConfig
-): Promise<GoogleUserInfo | undefined> {
+export async function clientGetGoogleUserInfo(
+  oAuthClientConfig: Omit<OAuthServerConfig, 'code' | 'state'>
+) {
   const urlParams = new URLSearchParams(window.location.search)
-  const code = urlParams.get('code')
+  const code = urlParams.get(RESPONSE_TYPE)
   if (!code) {
     return
   }
 
-  const { clientSecret, redirectUri, clientId } = googleConfig
+  const state = urlParams.get('state')
+  return serverGetGoogleUserInfo({
+    ...oAuthClientConfig,
+    code,
+    ...(state && { state }),
+  })
+}
+
+/**
+ * 服务端获取谷歌登录用户信息
+ */
+export async function serverGetGoogleUserInfo(
+  oAuthServerConfig: OAuthServerConfig
+): Promise<GoogleUserInfo | undefined> {
   /** 用授权码交换访问令牌地址 */
   const tokenEndpoint = 'https://oauth2.googleapis.com/token'
-  const requestBody = new URLSearchParams()
-
-  requestBody.append('code', code)
-  /** 你的 Google OAuth 客户端 ID */
-  requestBody.append('client_id', clientId)
-  /** 你的Google OAuth 客户端密钥 */
-  requestBody.append('client_secret', clientSecret)
-  requestBody.append('redirect_uri', redirectUri)
-  requestBody.append('grant_type', 'authorization_code')
+  const requestBody = {
+    ...oAuthServerConfig,
+    grant_type: GRANT_TYPE,
+  }
 
   let authData: AuthData
 
@@ -33,9 +43,9 @@ export async function getGoogleUserInfo(
     {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: requestBody
+      body: JSON.stringify(requestBody)
     }
   )
     .then(response => response.json())
@@ -47,7 +57,7 @@ export async function getGoogleUserInfo(
       /** 调用获取用户信息接口 */
       return fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `${data.token_type} ${accessToken}`
         }
       })
         .then(response => response.json())

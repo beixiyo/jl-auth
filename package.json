@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/auth",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Web 集成各大平台一键登录",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -20,7 +20,8 @@
     }
   },
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "dev": "vite"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
@@ -36,5 +37,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/beixiyo/jl-auth"
+  "homepage": "https://github.com/beixiyo/jl-auth",
+  "dependencies": {
+    "@jl-org/ts-tool": "^0.0.8"
+  }
 }

@@ -5,7 +5,9 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [
-    dts()
+    dts({
+      root: fileURLToPath(new URL('./src', import.meta.url)),
+    })
   ],
   resolve: {
     alias: {
@@ -13,6 +15,9 @@ export default defineConfig({
     },
   },
 
+  esbuild: {
+    drop: ['console', 'debugger'],
+  },
   build: {
     outDir: fileURLToPath(new URL('./dist', import.meta.url)),
     minify: true,
