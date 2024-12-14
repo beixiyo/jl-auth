@@ -51,7 +51,6 @@ export async function serverGetGoogleUserInfo(
     .then(response => response.json())
     .then(async (data: AuthData) => {
       authData = data
-      /** 获得token令牌的信息 */
       const accessToken = data.access_token
 
       /** 调用获取用户信息接口 */
