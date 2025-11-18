@@ -24,8 +24,7 @@ export default defineConfig({
     lib: {
       entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       fileName: 'index',
-      formats: ['es', 'cjs', 'iife'],
-      name: '_jlAuth',
+      formats: ['es', 'cjs'],
     },
   },
 })

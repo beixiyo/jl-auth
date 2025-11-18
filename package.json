@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/auth",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Web 集成各大平台一键登录",
   "main": "dist/index.cjs",
   "module": "dist/index.js",

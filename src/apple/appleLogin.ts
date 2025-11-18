@@ -1,46 +1,17 @@
 import type {
   AppleLoginConfig,
-  AppleScriptLoginConfig,
-  AppleScriptLoginResult,
+  ApplePopupLoginConfig,
+  ApplePopupLoginResult,
 } from './type'
 import { genOAuthUrl } from '@/utils'
+import { loadScript } from '@/utils/loadScript'
 
-const APPLE_JS_SDK_URL =
-  'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
-
-type AppleIDNamespace = {
-  auth: {
-    init: (config: AppleIdInitConfig) => void
-    signIn: (config?: Partial<AppleIdInitConfig>) => Promise<AppleScriptLoginResult>
-  }
-}
-
-type AppleIdInitConfig = {
-  clientId: string
-  scope: string
-  redirectURI: string
-  state?: string
-  nonce?: string
-  usePopup?: boolean
-  responseMode?: 'query' | 'fragment' | 'form_post'
-  responseType?: 'code' | 'id_token' | 'code id_token'
-  codeChallenge?: string
-  codeChallengeMethod?: 'plain' | 'S256'
-}
-
-declare global {
-  interface Window {
-    AppleID?: AppleIDNamespace
-  }
-}
-
-let loadAppleSdkPromise: Promise<AppleIDNamespace> | undefined
-
+const APPLE_JS_SDK_URL = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
 
 /**
- * 浏览器跳转到 Apple 登录
+ * 浏览器跳转到 Apple 登录（重定向模式）
  */
-export function appleLogin(appleLoginConfig: AppleLoginConfig) {
+export function appleRedirectLogin(appleLoginConfig: AppleLoginConfig) {
   const query = {
     scope: 'name email',
     response_mode: 'query' as const,
@@ -53,15 +24,14 @@ export function appleLogin(appleLoginConfig: AppleLoginConfig) {
   )
 }
 
-
 /**
- * 通过 Apple 官方脚本触发登录
+ * 通过 Apple 官方脚本触发登录（弹窗模式）
  */
-export async function appleScriptLogin(
-  loginConfig: AppleScriptLoginConfig
-): Promise<AppleScriptLoginResult> {
+export async function applePopupLogin(
+  loginConfig: ApplePopupLoginConfig
+): Promise<ApplePopupLoginResult> {
   if (typeof window === 'undefined') {
-    throw new Error('appleScriptLogin 仅能在浏览器环境中使用')
+    throw new Error('applePopupLogin 仅能在浏览器环境中使用')
   }
 
   const AppleID = await loadAppleSdk()
@@ -83,51 +53,44 @@ export async function appleScriptLogin(
   return AppleID.auth.signIn()
 }
 
-
 function loadAppleSdk(): Promise<AppleIDNamespace> {
   if (typeof window === 'undefined') {
-    return Promise.reject(new Error('appleScriptLogin 仅能在浏览器环境中使用'))
+    return Promise.reject(new Error('applePopupLogin 仅能在浏览器环境中使用'))
   }
 
-  if (window.AppleID) {
-    return Promise.resolve(window.AppleID)
-  }
-
-  if (loadAppleSdkPromise) {
-    return loadAppleSdkPromise
-  }
-
-  loadAppleSdkPromise = new Promise((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      `script[src="${APPLE_JS_SDK_URL}"]`
-    )
-
-    const onLoad = () => {
-      if (window.AppleID) {
-        resolve(window.AppleID)
-      } else {
-        reject(new Error('Apple Sign in with Apple SDK 加载失败'))
-      }
-    }
-
-    const onError = () => {
-      reject(new Error('Apple Sign in with Apple SDK 脚本加载失败'))
-    }
-
-    if (existingScript) {
-      existingScript.addEventListener('load', onLoad, { once: true })
-      existingScript.addEventListener('error', onError, { once: true })
-      return
-    }
-
-    const script = document.createElement('script')
-    script.src = APPLE_JS_SDK_URL
-    script.async = true
-    script.onload = onLoad
-    script.onerror = onError
-    document.head.appendChild(script)
+  return loadScript<AppleIDNamespace>({
+    src: APPLE_JS_SDK_URL,
+    getResult: () => window.AppleID,
+    attributes: {
+      async: true,
+    },
+    errorMessage: 'Apple Sign in with Apple SDK 加载失败',
   })
-
-  return loadAppleSdkPromise
 }
 
+
+type AppleIDNamespace = {
+  auth: {
+    init: (config: AppleIdInitConfig) => void
+    signIn: (config?: Partial<AppleIdInitConfig>) => Promise<ApplePopupLoginResult>
+  }
+}
+
+type AppleIdInitConfig = {
+  clientId: string
+  scope: string
+  redirectURI: string
+  state?: string
+  nonce?: string
+  usePopup?: boolean
+  responseMode?: 'query' | 'fragment' | 'form_post'
+  responseType?: 'code' | 'id_token' | 'code id_token'
+  codeChallenge?: string
+  codeChallengeMethod?: 'plain' | 'S256'
+}
+
+declare global {
+  interface Window {
+    AppleID?: AppleIDNamespace
+  }
+}

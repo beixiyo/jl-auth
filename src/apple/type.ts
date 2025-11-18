@@ -5,7 +5,7 @@ export type AppleLoginConfig = OAuthClientLoginConfig & {
   response_mode?: 'query' | 'fragment' | 'form_post'
 }
 
-export type AppleScriptLoginConfig = AppleLoginConfig & {
+export type ApplePopupLoginConfig = AppleLoginConfig & {
   /**
    * 是否使用 Apple 官方弹窗
    * @default true
@@ -16,7 +16,7 @@ export type AppleScriptLoginConfig = AppleLoginConfig & {
   codeChallengeMethod?: 'plain' | 'S256'
 }
 
-export type AppleScriptLoginResult = {
+export type ApplePopupLoginResult = {
   authorization: {
     code?: string
     id_token?: string

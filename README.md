@@ -18,13 +18,13 @@ npm i @jl-org/auth
 ### 纯浏览器实现
 
 ```ts
-import { googleLogin, clientGetGoogleUserInfo } from '@jl-org/auth'
+import { googleRedirectLogin, clientGetGoogleUserInfo } from '@jl-org/auth'
 
 /**
  * 点击登录
  */
-document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
-  googleLogin({
+document.getElementById('googleRedirectBtn')?.addEventListener('click', () => {
+  googleRedirectLogin({
     client_id: 'your-client-id',
     redirect_uri: 'your-redirect-uri',
   })
@@ -43,6 +43,30 @@ clientGetGoogleUserInfo({
     console.log(userInfo)
   })
 ```
+
+### GIS 弹窗方式（推荐）
+
+```ts
+import { googlePopupLogin } from '@jl-org/auth'
+
+document.getElementById('googlePopupBtn')?.addEventListener('click', async () => {
+  const result = await googlePopupLogin({
+    client_id: 'your-client-id',
+    redirect_uri: 'your-redirect-uri',
+    scope: 'email profile',
+    state: 'your-state',
+  })
+
+  // 将 result.code 发送到你的后端换取 token
+  await fetch('/api/auth/google/callback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: result.code, state: result.state }),
+  })
+})
+```
+
+> 弹窗模式基于 Google Identity Services 的 `initCodeClient`，用户完成授权后会把授权码返回给当前页面，再交给后端使用 client secret 换取 token，避免将密钥暴露在前端。
 
 ### 服务器端实现
 
@@ -71,13 +95,10 @@ serverGetGoogleUserInfo({
 ### 纯浏览器实现
 
 ```ts
-import {
-  appleLogin,
-  clientGetAppleUserInfo,
-} from '@jl-org/auth'
+import { appleRedirectLogin, clientGetAppleUserInfo } from '@jl-org/auth'
 
-document.getElementById('appleLoginBtn')?.addEventListener('click', () => {
-  appleLogin({
+document.getElementById('appleRedirectBtn')?.addEventListener('click', () => {
+  appleRedirectLogin({
     client_id: 'your-service-id',
     redirect_uri: 'your-redirect-uri',
     scope: 'name email',
@@ -95,17 +116,14 @@ clientGetAppleUserInfo({
   })
 ```
 
-### 使用 Apple 官方脚本
+### 使用 Apple 官方脚本（弹窗）
 
-```html
-<script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
-```
 
 ```ts
-import { appleScriptLogin } from '@jl-org/auth'
+import { applePopupLogin } from '@jl-org/auth'
 
-document.getElementById('applePopBtn')?.addEventListener('click', async () => {
-  const result = await appleScriptLogin({
+document.getElementById('applePopupBtn')?.addEventListener('click', async () => {
+  const result = await applePopupLogin({
     client_id: 'your-service-id',
     redirect_uri: 'your-redirect-uri',
     scope: 'name email',
@@ -113,8 +131,7 @@ document.getElementById('applePopBtn')?.addEventListener('click', async () => {
     usePopup: true,
   })
 
-  // result.authorization.code => 交换 token
-  // result.user => 首次授权才会包含 name/email
+  // 使用 usePopup 则可以直接拿到结果
   console.log(result)
 })
 ```
