@@ -3,11 +3,10 @@ import type {
   GooglePopupLoginConfig,
   GooglePopupLoginResult,
 } from './type'
-import { genOAuthUrl } from '@/utils'
+import { buildOAuthUrl } from '@/utils'
 import { loadScript } from '@/utils/loadScript'
+import { GOOGLE_GIS_SDK_URL, GOOGLE_OAUTH_URL } from './constants'
 
-
-const GOOGLE_GIS_SDK_URL = 'https://accounts.google.com/gsi/client'
 
 /**
  * 浏览器跳转到谷歌登录（重定向模式）
@@ -18,8 +17,8 @@ export function googleRedirectLogin(googleLoginConfig: GoogleLoginConfig) {
     ...googleLoginConfig,
   }
 
-  window.location.href = genOAuthUrl(
-    'https://accounts.google.com/o/oauth2/v2/auth',
+  window.location.href = buildOAuthUrl(
+    GOOGLE_OAUTH_URL,
     query,
   )
 }

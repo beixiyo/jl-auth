@@ -3,10 +3,10 @@ import type {
   ApplePopupLoginConfig,
   ApplePopupLoginResult,
 } from './type'
-import { genOAuthUrl } from '@/utils'
+import { buildOAuthUrl } from '@/utils'
 import { loadScript } from '@/utils/loadScript'
+import { APPLE_JS_SDK_URL, APPLE_OAUTH_URL } from './constants'
 
-const APPLE_JS_SDK_URL = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
 
 /**
  * 浏览器跳转到 Apple 登录（重定向模式）
@@ -18,8 +18,8 @@ export function appleRedirectLogin(appleLoginConfig: AppleLoginConfig) {
     ...appleLoginConfig,
   }
 
-  window.location.href = genOAuthUrl(
-    'https://appleid.apple.com/auth/authorize',
+  window.location.href = buildOAuthUrl(
+    APPLE_OAUTH_URL,
     query,
   )
 }

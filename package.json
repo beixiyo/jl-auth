@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Web 集成各大平台一键登录",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -21,7 +21,8 @@
   },
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

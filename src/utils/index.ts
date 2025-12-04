@@ -5,7 +5,7 @@ import type { OAuthClientLoginConfig } from '@/types'
 /**
  * 生成 OAuth2 URL
  */
-export function genOAuthUrl(
+export function buildOAuthUrl(
   url: string,
   params: OAuthClientLoginConfig
 ) {
@@ -14,7 +14,7 @@ export function genOAuthUrl(
     ...params,
     response_type: RESPONSE_TYPE,
   }
-  
+
   for (const key in data) {
     query += `${key}=${(data as any)[key] ?? ''}&`
   }
