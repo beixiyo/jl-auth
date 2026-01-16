@@ -5,6 +5,9 @@ import type { AuthData, OAuthServerConfig } from '@/types'
 
 /**
  * 浏览器获取谷歌用户信息
+ *
+ * @deprecated 此方式需要在前端暴露 client_secret，存在安全风险
+ * @see googlePopupLogin
  */
 export async function clientGetGoogleUserInfo(
   oAuthClientConfig: Omit<OAuthServerConfig, 'code' | 'state'>
@@ -25,6 +28,9 @@ export async function clientGetGoogleUserInfo(
 
 /**
  * 服务端获取谷歌登录用户信息
+ *
+ * @deprecated 此方式需要写服务端 client_secret，推荐使用 googlePopupLogin（无需 secret）
+ * @see googlePopupLogin
  */
 export async function serverGetGoogleUserInfo(
   oAuthServerConfig: OAuthServerConfig

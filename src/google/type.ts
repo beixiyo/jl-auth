@@ -13,10 +13,10 @@ export type GoogleUserInfo = {
 }
 
 export type GooglePrompt =
+  | ''
   | 'none'
   | 'consent'
   | 'select_account'
-  | 'login'
 
 export type GoogleLoginConfig =
   OAuthClientLoginConfig & {
@@ -26,7 +26,11 @@ export type GoogleLoginConfig =
     prompt?: GooglePrompt
   }
 
-export type GooglePopupLoginConfig = GoogleLoginConfig & {
+export type GooglePopupLoginConfig = Omit<GoogleLoginConfig, 'redirect_uri'> & {
+  /**
+   * 弹出层登录不需要 redirect_uri，设为可选以匹配基类并保持兼容性
+   */
+  redirect_uri?: string
   /**
    * 是否启用串行授权（Google 官方 experimental）
    */
@@ -43,12 +47,26 @@ export type GooglePopupLoginConfig = GoogleLoginConfig & {
    * 企业域过滤
    */
   hosted_domain?: string
+  /**
+   * 是否覆盖默认 scope。
+   * 如果为 false (默认)，则会自动添加 'openid email profile'
+   * 如果为 true，则仅使用传入的 scope
+   */
+  overrideScope?: boolean
 }
 
 export type GooglePopupLoginResult = {
-  code: string
-  scope?: string
+  access_token: string
+  expires_in: number
+  hd?: string
+  prompt: string
+  token_type: string
+  scope: string
   state?: string
-  authuser?: string
-  prompt?: string
+}
+
+export type GooglePopupCodeResult = {
+  code: string
+  scope: string
+  state?: string
 }

@@ -10,6 +10,9 @@ import { APPLE_JS_SDK_URL, APPLE_OAUTH_URL } from './constants'
 
 /**
  * 浏览器跳转到 Apple 登录（重定向模式）
+ *
+ * @deprecated 此方式需要后端使用 client_secret，推荐使用 applePopupLogin（无需 secret）
+ * @see applePopupLogin
  */
 export function appleRedirectLogin(appleLoginConfig: AppleLoginConfig) {
   const query = {
